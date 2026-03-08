@@ -180,14 +180,12 @@ class Solution:
                 r = m
         return l
     
-    def test(self, ):
+    def findCircleNum_test(self, ):
         isConnected = [[1,1,0],[1,1,0],[0,0,1]]
         res = 2
         
         # isConnected = [[1,0,0],[0,1,0],[0,0,1]]
         # res = 3
-        
-        
         
         r = self.findCircleNum(isConnected)
         print(r)
@@ -208,8 +206,117 @@ class Solution:
                 dfs(i, set_idx)
                 set_idx += 1
         return set_idx
-                    
-                    
+
+    def findMedianSortedArrays_test(self, ):
+        nums1 = [1,3]
+        nums2 = [2]
+        res = 2
+        
+        # nums1 = [1,2]
+        # nums2 = [3,4]
+        # res = 2.5
+
+        # nums1 = [2, 3, 4]
+        # nums2 = [1]
+        # res = 2.5
+
+        # nums1 = [2,3,4,5,6]
+        # nums2 = [1]
+        # res = 3.5
+        
+        
+        
+        r = self.findMedianSortedArrays(nums1, nums2)
+        print(r)
+        print(r == res)
+        return
+
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        def dfs(l0, r0, l1, r1, k):
+            if l0 >= r0:
+                return nums2[l1 + k-1]
+            elif l1 >= r1:
+                return nums1[l0 + k-1]
+            
+            if k == 1:
+                return min(nums1[l0], nums2[l1])
+            elif k == 2:
+                if nums1[l0] < nums2[l1]:
+                    return dfs(l0+1, r0, l1, r1, k-1)
+                else:
+                    return dfs(l0, r0, l1+1, r1, k-1)
+                
+            km = (k - 1) // 2
+            if r0 - l0 < r1 - l1:
+                m0 = min(r0 - l0, km)
+                m1 = k - 1 - m0
+            else:
+                m1 = min(r1 - l1, km)
+                m0 = k - 1 - m1
+
+            
+            if nums1[l0 + m0-1] < nums2[l1 + m1-1]:
+                return dfs(l0 + m0, r0, l1, r1, k-m0)
+            else:
+                return dfs(l0, r0, l1+m1, r1, k-m1)
+
+        n0, n1 = len(nums1), len(nums2)
+        k = (n0 + n1) // 2
+        res = dfs(0, len(nums1), 0, len(nums2), k+1)
+        if (n0 + n1) % 2 == 0:
+            b = dfs(0, len(nums1), 0, len(nums2), k)
+            res = (res + b) / 2
+        return res
+    
+    def searchMatrix_test(self, ):
+        matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]]
+        target = 5
+        res = True
+        
+        matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]]
+        target = 20
+        res = False
+        
+        r = self.searchMatrix(matrix, target)
+        print(r)
+        print(r == res)
+        return
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        m, n = len(matrix), len(matrix[0])
+        i, j = 0, n-1
+        while 0 <= i < m and 0 <= j < n:
+            if matrix[i][j] == target:
+                return True
+            elif matrix[i][j] > target:
+                j -= 1
+            else:
+                i += 1
+        return False
+    
+    def test(self):
+        x = 4
+        res = 2
+
+        # x = 8
+        # res = 2
+
+        r = self.mySqrt(x)
+        print(r)
+        print(r == res)
+        return
+
+    def mySqrt(self, x: int) -> int:
+        l, r = 0, x + 1
+        while l < r:
+            m = (l + r) // 2
+            if m * m < x:
+                l = m + 1
+            else:
+                r = m
+        if l * l > x:
+            l -= 1
+        return l
+
 
 if __name__ == '__main__':
     Solution().test()

@@ -49,8 +49,9 @@ class Solution:
         slow = head
         fast = head.next
         while slow != fast:
-            if not fast.next or not fast.next.next:
+            if not fast or not fast.next:
                return False
             slow = slow.next
             fast = fast.next.next
+
         return False

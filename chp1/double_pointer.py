@@ -1,5 +1,6 @@
 from typing import List
 from functools import cmp_to_key
+import heapq
 
 class Solution:
     def threeSum_test(self, ):
@@ -110,7 +111,7 @@ class Solution:
             if r1 < 0 and r0 < 0:
                 break
     
-    def test(self, ):
+    def addStrings_test(self, ):
         num1 = "11"
         num2 = "123"
         res = "134"
@@ -141,8 +142,226 @@ class Solution:
         if t:
             res = str(t) + res
         return res
+    
+    def maxSlidingWindow_test(self, ):
+        nums = [1,3,-1,-3,5,3,6,7]
+        k = 3
+        res = [3,3,5,5,6,7]
+        
+        # nums = [1]
+        # k = 1
+        # res = [1]
+
+        r = self.maxSlidingWindow2(nums, k)
+        print(r)
+        print(r==res)
+        return
+    def maxSlidingWindow0(self, nums: List[int], k: int) -> List[int]:
+        heap = [(nums[i], i) for i in range(k-1)]
+        heapq.heapify_max(heap)
+        
+        res = []
+        for i in range(k-1, len(nums)):
+            heapq.heappush_max(heap, (nums[i], i))
+            while heap[0][1] < i - k + 1:
+                heapq.heappop_max(heap)
+            res.append(heap[0][0])
+        return res
+    def maxSlidingWindow1(self, nums: List[int], k: int) -> List[int]:
+        import collections
+        q = collections.deque()
+        
+        for i in range(k-1):
+            while q and nums[i] > nums[q[-1]]:
+                q.pop()
+            q.append(i)
+        
+        res = []
+        for i in range(k-1, len(nums)):
+            while q and nums[i] > nums[q[-1]]:
+                q.pop()
+            q.append(i)
+            while q and q[0] < i - k + 1:
+                q.popleft()
+            res.append(nums[q[0]])
+        return res
+    def maxSlidingWindow2(self, nums: List[int], k: int) -> List[int]:
+        n = len(nums)
+        prefix_max = []
+        for i in range(n):
+            if i % k == 0:
+                prefix_max.append(nums[i])
+            else:
+                prefix_max.append(max(prefix_max[i-1], nums[i]))
+        
+        suffix_max = [0] * n
+        for i in range(n-1, -1, -1):
+            if i == n-1 or i % k == k-1:
+                suffix_max[i] = nums[i]
+            else:
+                suffix_max[i] = max(suffix_max[i+1], nums[i])
+        
+        res = [max(prefix_max[i], suffix_max[i-k+1]) for i in range(k-1, n)]
+        return res
+    
+    
+    def lengthOfLongestSubstring_test(self, ):
+        s = "abcabcbb"
+        res = 3
+        
+        # s = "bbbbb"
+        # res = 1
+        
+        # s = "pwwkew"
+        # res = 3
+
+        r = self.lengthOfLongestSubstring1(s)
+        print(r)
+        print(r==res)
+        return  
+    
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        i = 0
+        c2i = {}
+        max_len = 0
+        for j in range(len(s)):
+            c = s[j]
+            if c in c2i:
+                _i = c2i[c] + 1
+                for t in range(i, _i):
+                    c2i.pop(s[t])
+                i = _i
+            c2i[c] = j
+            max_len = max(max_len, len(c2i))
+        return max_len
+    
+    def lengthOfLongestSubstring1(self, s: str) -> int:
+        c2i = {}
+        res, tmp = 0, 0
+        for i in range(len(s)):
+            c = s[i]
+            _i = c2i.get(c, -1)
+            c2i[c] = i
+            tmp = tmp + 1 if tmp < i - _i else i - _i
+            res = max(res, tmp)
+        return res
+    
+    def findLength_test(self, ):
+        nums1 = [1,2,3,2,1]
+        nums2 = [3,2,1,4,7]
+        res = 3
+        
+        # nums1 = [0,0,0,0,0]
+        # nums2 = [0,0,0,0,0]
+        # res = 5
         
 
+        r = self.findLength(nums1, nums2)
+        print(r)
+        print(r==res)
+        return  
+    
+    def findLength(self, nums1: List[int], nums2: List[int]) -> int:
+        '''dp_i_j = f(a[i:], b[j:])
+        dp_i_j-1 = f(a[i:], b[j-1:]) = f(a[i:], b[j:])
+        '''
+        m, n = len(nums1), len(nums2)
+        last_dp = [0] * (n+1)
+        dp = [0] * (n+1)
+        res = 0
+        for i in range(m):
+            for j in range(n):
+                if nums1[i] == nums2[j]:
+                    dp[j+1] = last_dp[j] + 1
+                    res = max(res, dp[j+1])
+            last_dp = dp
+            dp = [0] * (n+1)
+        return res
+        
+    def test(self, ):
+        s = "ADOBECODEBANC"
+        t = "ABC"
+        res = 'BANC'
+        
+        # s = "a"
+        # t = "a"
+        # res = 'a'
+        
+        # s = "a"
+        # t = "aa"
+        # res = ''
+        
+        # nums1 = [0,0,0,0,0]
+        # nums2 = [0,0,0,0,0]
+        # res = 5
+        
+
+        r = self.minWindow(s, t)
+        print(r)
+        print(r==res)
+        return  
+
+    def minWindow(self, s: str, t: str) -> str:
+        '''https://leetcode.cn/problems/minimum-window-substring/description/
+        给定两个字符串 s 和 t，长度分别是 m 和 n，返回 s 中的 最短窗口 子串，使得该子串包含 t 中的每一个字符（包括重复字符）。如果没有这样的子串，返回空字符串 ""。
+
+        测试用例保证答案唯一。
+        
+        '''
+        def check(s_chr, t_chr):
+            for c, n in t_chr.items():
+                if s_chr.get(c, 0) < n:
+                    return False
+            return True
+        
+        def add(chr, c, x):
+            if c not in chr:
+                chr[c] = 0
+            chr[c] += x
+        
+        t_chr = {}
+        for c in t:
+            if c in t_chr:
+                t_chr[c] += 1
+            else:
+                t_chr[c] = 1
+        m, n = len(s), len(t)
+        l, r = 0, 0
+        res_len = m + 1
+        res = ''
+        
+        s_chr = {}
+        while True:
+            while r < m:
+                add(s_chr, s[r], 1)
+                r += 1
+                if check(s_chr, t_chr):
+                    break
+                
+            
+            while l <= r:
+                add(s_chr, s[l], -1)
+                l += 1
+                if not check(s_chr, t_chr):
+                    l -= 1
+                    add(s_chr, s[l], 1)
+                    break
+                
+            if r <= m:
+                if check(s_chr, t_chr) and res_len > r - l:
+                    res_len = r - l
+                    res = s[l: r]
+            
+            if r >= m:
+                break
+        return res
+                    
+            
+                
+        
+        
+        
+        
         
 
 if __name__ == '__main__':

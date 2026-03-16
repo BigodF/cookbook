@@ -152,11 +152,11 @@ class Solution:
         # k = 1
         # res = [1]
 
-        r = self.maxSlidingWindow2(nums, k)
+        r = self.maxSlidingWindow_heap(nums, k)
         print(r)
         print(r==res)
         return
-    def maxSlidingWindow0(self, nums: List[int], k: int) -> List[int]:
+    def maxSlidingWindow_heap(self, nums: List[int], k: int) -> List[int]:
         heap = [(nums[i], i) for i in range(k-1)]
         heapq.heapify_max(heap)
         
@@ -167,7 +167,7 @@ class Solution:
                 heapq.heappop_max(heap)
             res.append(heap[0][0])
         return res
-    def maxSlidingWindow1(self, nums: List[int], k: int) -> List[int]:
+    def maxSlidingWindow_deque(self, nums: List[int], k: int) -> List[int]:
         import collections
         q = collections.deque()
         
@@ -185,7 +185,7 @@ class Solution:
                 q.popleft()
             res.append(nums[q[0]])
         return res
-    def maxSlidingWindow2(self, nums: List[int], k: int) -> List[int]:
+    def maxSlidingWindow_double_ptr(self, nums: List[int], k: int) -> List[int]:
         n = len(nums)
         prefix_max = []
         for i in range(n):

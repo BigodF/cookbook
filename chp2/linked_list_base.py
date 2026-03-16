@@ -382,12 +382,18 @@ class Solution:
         # lists = []
         # res = []
         
-        # lists = []
-        # res = []
+        # lists = [[1,2,3],[4,5,6,7]]
+        # res = [1, 2, 3, 4, 5, 6, 7]
+        
+        # lists = [[-1,1],[-3,1,4],[-2,-1,0,2]]
+        # res = [-3, -2, -1 ,-1, 0, 1, 1, 2, 4]
+        
+        lists = [[-9,-7,-7],[-6,-4,-1,1],[-6,-5,-2,0,0,1,2],[-9,-8,-6,-5,-4,1,2,4],[-10],[-5,2,3]]
+        res = [-10,-9,-9,-8,-7,-7,-6,-6,-6,-5,-5,-5,-4,-4,-2,-1,0,0,1,1,1,2,2,2,3,4]
         
         lists = [list2linked_list(t) for t in lists]
         
-        r = self.mergeKLists(lists)
+        r = self.mergeKLists_heap(lists)
         
         r = linked_list2list(r)
         print(r)
@@ -412,20 +418,47 @@ class Solution:
                 last.next = smallest_node
             last = smallest_node
         return head
+    
+    
+    def mergeKLists_heap(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        heap = [h for h in lists if h]
+        heap_size = len(heap)
+        def heapfiy(heap, i, heap_size):
+            smallest_idx = i
+            l = 2*i + 1
+            if l < heap_size and heap[l].val < heap[smallest_idx].val:
+                smallest_idx = l
+            r = l + 1
+            if r < heap_size and heap[r].val < heap[smallest_idx].val:
+                smallest_idx = r
+            if smallest_idx != i:
+                heap[i], heap[smallest_idx] = heap[smallest_idx], heap[i]
+                heapfiy(heap, smallest_idx, heap_size)
             
-                    
-                
+        for i in range(len(heap)//2, -1, -1):
+            heapfiy(heap, i, heap_size)
+        
+        head = None
+        last = None
+        while heap_size > 0:
+            top = heap[0]
+            if last:
+                last.next = top
+            if not head:
+                head = top
+            last = top
+            if heap_size <= 1:
+                break
             
-        
-        
-            
-            
-        
-        
-        
-        
-                
-                
+            top_next = top.next
+            if not top_next:
+                if heap_size > 1:
+                    top_next = heap[heap_size-1]
+                heap_size -= 1
+            if top_next != None:
+                heap[0] = top_next
+                heapfiy(heap, 0, heap_size)
+        return head
 
 if __name__ == '__main__':
     Solution().test()

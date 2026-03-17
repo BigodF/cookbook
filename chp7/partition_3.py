@@ -88,7 +88,7 @@ class Solution:
         return res
     
     # 4: https://leetcode.cn/problems/median-of-two-sorted-arrays/
-    def test(self, ):
+    def findMedianSortedArrays_test(self, ):
         nums1 = [1,3]
         nums2 = [2]
         res = 2
@@ -162,7 +162,106 @@ class Solution:
                 cnt -= 1
         return cand
                     
-                    
+    # 46: https://leetcode.cn/problems/permutations/description/
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        res = [[nums[0]]]
+        for n in nums[1:]:
+            _res = []
+            for t in res:
+                for j in range(len(t)+1):
+                    _res.append(t[:j] + [n] + t[j:])
+            res = _res
+        return res
+    
+    def generateParenthesis_test(self, ):
+        n = 3
+        res = ["((()))","(()())","(())()","()(())","()()()"]
+        res.sort()
+        r = self.generateParenthesis(n)
+        r.sort()
+        print(r)
+        print(r==res)
+        return
+    def generateParenthesis(self, n: int) -> List[str]:
+        def add(res, c):
+            return [r+c for r in res]
+        
+        def dfs(left_num, right_num, res):
+            if left_num == right_num:
+                if left_num == n:
+                    return res
+                else:
+                    return dfs(left_num+1, right_num, add(res, '('))
+            elif left_num > right_num:
+                _res = dfs(left_num, right_num+1, add(res, ')'))
+                if left_num < n:
+                    _res.extend(dfs(left_num+1, right_num, add(res, '(')))
+                return _res
+        return dfs(0, 0, [''])
+    
+    def combinationSum_test(self, ):
+        candidates = [2,3,6,7]
+        target = 7
+        res = [[2,2,3],[7]]
+        
+        r = self.combinationSum(candidates, target)
+        # r.sort()
+        print(r)
+        print(r==res)
+        return
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        n = len(candidates)
+        def dfs(target, i):
+            res = []
+            cnt = 0
+            while True:
+                s = cnt * candidates[i]
+                if s == target:
+                    res.append([candidates[i]]*cnt)
+                elif s > target:
+                    break
+                elif i < n-1:
+                    _res = dfs(target-s, i+1)
+                    _res = [[candidates[i]]*cnt + r for r in _res]
+                    res.extend(_res)
+                cnt += 1
+            return res
+        res = dfs(target, 0)
+        return res
+    
+    def test(self, ):
+        s = "25525511135"
+        res = ["255.255.11.135","255.255.111.35"]
+        
+        r = self.restoreIpAddresses(s)
+        # r.sort()
+        print(r)
+        print(r==res)
+        return
+    def restoreIpAddresses(self, s: str) -> List[str]:
+        n = len(s)
+        def dfs(dot_num, i):
+            if dot_num == 4:
+                if i == n:
+                    return ['']
+                return []
+            res = []
+            for j in range(i, i+3):
+                if j >= n:
+                    break
+                if j != i and s[i] == '0':
+                    break
+                tmp = s[i:j+1]
+                if int(tmp) <= 255:
+                    _res = dfs(dot_num+1, j+1)
+                    _res = [f'{tmp}.{r}' if r else tmp for r in _res]
+                    res.extend(_res)
+            return res
+        res = dfs(0, 0)
+        return res
+        
+                        
             
             
             

@@ -212,8 +212,32 @@ class Solution:
             slow = nums[slow]
             fast = nums[fast]
         return slow
-            
     
+    # https://leetcode.cn/problems/longest-increasing-subsequence/
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        '''
+        dp[i]: 以i结尾的最长递增子序列。
+        tail[i]: 长度为i+1的子序列的尾端的最小值。
+        '''
+        n = len(nums)
+        tails = [float('inf')] * n
+        dp = [1] * n
+        
+        def bs(n):
+            l, r = 0, n
+            while l < r:
+                m = (l + r) >> 1
+                if tails[m] < n:
+                    
+                    
+                    
+            
+            
+        
+        for i, n in enumerate(nums):
+            
+        
+        
     
 if __name__ == '__main__':
     Solution().test()

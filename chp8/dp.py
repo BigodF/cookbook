@@ -68,7 +68,7 @@ def Tree2list(root):
     return res
 
 class Solution:
-    def test(self, ):
+    def maxProfit_test(self, ):
         # prices = [7,1,5,3,6,4]
         # res = 5
         # r = self.maxProfit(prices)
@@ -213,31 +213,95 @@ class Solution:
             fast = nums[fast]
         return slow
     
+
     # https://leetcode.cn/problems/longest-increasing-subsequence/
+    def lengthOfLIS_test(self,):
+        nums = [10,9,2,5,3,7,101,18]
+        res = 4
+        r = self.lengthOfLIS(nums)
+        
+        print(r)
+        print(r==res)
+        return
     def lengthOfLIS(self, nums: List[int]) -> int:
         '''
         dp[i]: 以i结尾的最长递增子序列。
         tail[i]: 长度为i+1的子序列的尾端的最小值。
         '''
+
         n = len(nums)
-        tails = [float('inf')] * n
+        tails =  [float('inf')] * (n + 1)
         dp = [1] * n
         
-        def bs(n):
-            l, r = 0, n
+        res = 1
+        def bs(t):
+            '''
+            查找小于t的最大下标
+            '''
+            l, r = 0, res + 1
             while l < r:
                 m = (l + r) >> 1
-                if tails[m] < n:
-                    
-                    
-                    
-            
-            
+                if tails[m] < t:
+                    l = m + 1
+                else:
+                    r = m
+            # 以上找到的l是>=t的最小下标，在左移一位就是<t的下标，注意有可能是-1。
+            if tails[l] == t:
+                l -= 1
+            return l
         
-        for i, n in enumerate(nums):
-            
+        for i, t in enumerate(nums):
+            min_len = bs(t)
+            # min_len可能是-1，但是dp是用1处理化的，不影响结果。
+            dp[i] = max(dp[i], min_len + 1)
+            res = max(res, dp[i])
+            tails[dp[i]-1] = min(tails[dp[i]-1], t)
+        return res
+    
+    # https://leetcode.cn/problems/longest-common-subsequence/
+    def test(self,):
+        text1 = 'ABCBDAB'
+        text2 = 'BACBBD'
+        res = 4
+        r = self.longestCommonSubsequence(text1, text2)
         
-        
+        print(r)
+        print(r==res)
+        return
+    def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        '''
+        dp[i, j]: 表示text1[:i] 和 text2[:j]最长公共子序列长度。
+        递推过程：
+        dp[i, j] = dp[i, j-1]
+
+        '''
+        # text1 = input().rstrip('.')
+        # text2 = input().rstrip('.')
+        m, n = len(text1), len(text2)
+        dp1 = [0] * (n+1)
+        dp2 = [0] * (n+1)
+        max_len = -1
+        max_cnt = 0
+        for i in range(m):
+            for j in range(n):
+                if text1[i] == text2[j]:
+                    dp2[j+1] = dp1[j] + 1
+                    # if dp2[j+1] > max_len:
+                    #     max_len = dp2[j+1]
+                    #     max_cnt = 1
+                    # elif dp2[j+1] == max_len:
+                    max_cnt += 1
+                else:
+                    dp2[j+1] = max(dp2[j], dp1[j+1])
+            dp1 = dp2
+            dp2 = [0] * (n+1)
+        print(max_len)
+        print(max_cnt)
+        return max_len, max_cnt
+
+
+
+
     
 if __name__ == '__main__':
     Solution().test()

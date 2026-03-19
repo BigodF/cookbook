@@ -559,7 +559,15 @@ class Solution:
                         pos = False
                 elif c in '++':
                     c
-           
+        
+        def nextPermutation(self, nums: List[int]) -> None:
+            """
+            Do not return anything, modify nums in-place instead.
+            """
+            n = len(nums)
+            i = 0
+            while 
+            
             
                 
         

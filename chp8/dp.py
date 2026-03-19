@@ -299,7 +299,199 @@ class Solution:
         print(max_cnt)
         return max_len, max_cnt
 
-
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        '''
+        dp[i, j] = min(dp[i-1, j], dp[i, j-1]) + grid[i, j]
+        '''
+        
+        m, n = len(grid), len(grid[0])
+        dp = [[float('inf')] * (n+1) for _ in range(2)]
+        dp[0][1] = 0
+        for i in range(m):
+            last_i = i % 2
+            cur_i = (i + 1) % 2
+            for j in range(n):
+                dp[cur_i][j+1] = min(dp[last_i][j+1], dp[cur_i][j]) + grid[i][j]
+        return dp[m%2][-1]
+    
+    def minDistance(self, word1: str, word2: str) -> int:
+        m, n = len(word1), len(word2)
+        dp = [list(range(n+1)) for _ in range(2)]
+        for i in range(m):
+            last_i = i % 2
+            cur_i = (i + 1) % 2
+            c1 = word1[i]
+            dp[cur_i][0] = i + 1
+            for j in range(n):
+                c2 = word2[j]
+                if c1 == c2:
+                    dp[cur_i][j+1] = dp[last_i][j]
+                else:
+                    dp[cur_i][j+1] = min(dp[last_i][j], dp[cur_i][j], dp[last_i][j+1]) + 1
+        return dp[m%2][-1]
+    
+    
+    def longestValidParentheses_test(self, ):
+        s = ")()())"
+        res = 4
+        
+        s = '(()'
+        res = 2
+        
+        s = "()(()"
+        res = 2
+        
+        r = self.longestValidParentheses(s)
+        print(r)
+        print(r==res)
+        return  
+    def longestValidParentheses(self, s: str) -> int:
+        def max_len(s, l_c='('):
+            l_cnt = r_cnt = 0
+            res = 0
+            last_idx = 0
+            for i, c in enumerate(s):
+                if c == l_c:
+                    l_cnt += 1
+                else:
+                    r_cnt += 1
+                # print(l_cnt, r_cnt, res)
+                if l_cnt == r_cnt:
+                    res = max(res, 2*r_cnt)
+                    last_idx = i
+                elif l_cnt < r_cnt:
+                    l_cnt = r_cnt = 0
+            return res, last_idx
+        res, l2r_idx = max_len(s, '(')
+        if l2r_idx < len(s) - 1:
+            r2l_max, _ = max_len(s[l2r_idx+1:][::-1], ')')
+            res = max(res, r2l_max)
+        
+        return res
+    
+    def uniquePaths_test(self, ):
+        m = 3
+        n = 2
+        res = 3
+        
+        r = self.uniquePaths(m, n)
+        print(r)
+        print(r==res)
+        return
+    def uniquePaths(self, m: int, n: int) -> int:
+        '''
+        dp[i, j] = dp[i-1, j] + dp[i, j-1]
+        # 初始化注意为0
+        '''
+        dp = [[0]*(n+1) for _ in range(2)]
+        for i in range(m):
+            last_i = i % 2
+            cur_i = (i + 1) % 2
+            dp[cur_i][1] = 1
+            for j in range(1, n):
+                dp[cur_i][j+1] = dp[cur_i][j] + dp[last_i][j+1]
+        return dp[m%2][-1]
+    
+    def maxProduct_test(self, ):
+        nums = [2,3,-2,4]
+        nums = [-2,0,-1]
+        print(self.maxProduct(nums))
+    def maxProduct(self, nums: List[int]) -> int:
+        '''
+        dp[i, j] = dp[]
+        '''
+        last_max = last_min = nums[0]
+        res = nums[0]
+        for n in nums[1:]:
+            _last_min = min(last_max*n, last_min*n, n)
+            _last_max = max(last_max*n, last_min*n, n)
+            last_max, last_min = _last_max, _last_min
+            # print(last_max, last_min)
+            res = max(res, last_max)
+        return res
+    
+    def rob_test(self, ):
+        nums = [1,2,3,1]
+        nums = [2,7,9,3,1]
+        print(self.rob(nums))
+    def rob(self, nums: List[int]) -> int:
+        '''
+        dp[i] = max(dp[i-2]+nums[i], dp[i-1])
+        '''
+        n = len(nums)
+        dp = [0] * 3
+        res = 0
+        for i, n in enumerate(nums):
+            __i = i % 3
+            _i = (i + 1) % 3
+            i = (i + 2) % 3
+            
+            # dp[i+2] = max(dp[i+1], dp[i]+n)
+            dp[i] = max(dp[_i], dp[__i]+n)
+            res = max(dp[i], res)
+        return res
+    
+    def test(self, ):
+        ops = ["LRUCache","put","put","get","put","get","put","get","get","get"]
+        args = [[2],[1,0],[2,2],[1],[3,3],[2],[4,4],[1],[3],[4]]
+        
+        ops = ["LRUCache","get","put","get","put","put","get","get"]
+        args = [[2],[2],[2,6],[1],[1,5],[1,2],[1],[2]]
+        res = [None,-1,None,-1,None,None,2,6]
+        
+        lru = LRUCache(2)
+        for i in range(1, len(ops)):
+            op = ops[i]
+            if i == len(ops) - 1:
+                print()
+            r = getattr(lru, op)(*args[i])
+            print(op, args[i], r, r == res[i])
+    
+    
+    # def myAtoi(self, s: str) -> int:
+    #    pos = True
+    #    nums = False
+    #    res = 0
+    #    for c in s:
+    #        if c == ' ':
+    #            continue
+    #        if first_char == False:
+    #            if c in '-+':
+    #                 first_char = True
+    #                 if c == '-':
+    #                     pos = False
+    #             elif c in '++':
+    #                 c
+    
+    def test(self,):
+        nums = [3,2,1]
+        print(self.nextPermutation(nums))
+    def nextPermutation(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        n = len(nums)
+        idx = -1
+        for i in range(n-1, 0, -1):
+            if nums[i-1] < nums[i]:
+                idx = i - 1
+                break
+        if idx != -1:
+            min_n_j = None
+            min_j = None
+            for j in range(idx+1, n):
+                if nums[j] > nums[idx] and nums[j] <= min_n_j:
+                    min_n_j = nums[j]
+                    min_j = j
+            nums[idx], nums[min_j] = nums[min_j], nums[idx]
+        
+        l = idx + 1
+        r = n-1
+        while l<r:
+            nums[l], nums[r] = nums[r], nums[l]
+            l += 1
+            r -= 1
+        return nums
 
 
     

@@ -67,7 +67,23 @@ def rotate_position(q: torch.Tensor, k: torch.Tensor):
     k_out = k * freq_cos + k * freq_sin
     return q_out, k_out
 
+def rotate_position_polar(q: torch.Tensor, k: torch.Tensor):
+    def cal_freq(dim, seq, theta=10000.0):
+        freq = 1 / (theta ** (torch.arange(0, seq, 2).float() / dim))
+        pos = torch.arange(seq)
+        freq = torch.outer(pos, freq).float()
+        # L, d//2
+        freq_emb = torch.polar(torch.ones_like(freq), freq)
+        return freq_emb
+    freq_cos, freq_sin = cal_freq(16, 128)
+    q = rotate_half(q)
+    k = rotate_half(k)
+    q_out = q * freq_cos + q * freq_sin
+    k_out = k * freq_cos + k * freq_sin
+    return q_out, k_out
+
 def contrastive_loss(feats: torch.Tensor, temp=0.5):
+    # F.cosine_similarity
     feats = F.normalize(feats, dim=1)
     sim = torch.matmul(feats, feats.T)
     sim = sim / temp

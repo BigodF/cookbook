@@ -238,7 +238,63 @@ class Solution:
         print(res)
         return res
         
+    # def putMarbles(self, weights: List[int], k: int) -> int:
+    def test(self,):
+        weights = [1,3,5,1]
+        k = 2
+        
+        n = len(weights)
+        for i in range(n-1):
+            weights[i] += weights[i+1]
+        weights.pop()
+        weights.sort()
+        
+        res = sum(weights[n-k:]) - sum(weights[:k-1])
+        return res
+    
+    # def minCapability(self, nums: List[int], k: int) -> int:
+    def test(self, ):
+        nums = [2,3,5,9]
+        k = 2
+        
+        min_m, max_m = min(nums), max(nums) + 1
+        while min_m < max_m:
+            m = (min_m + max_m) >> 1
+            last_steal_idx = -2
+            cnt = 0
+            for i, n in enumerate(nums):
+                if n <= m and i - last_steal_idx > 1:
+                    last_steal_idx = i
+                    cnt += 1
+                    if cnt >= k:
+                        break
+            if cnt < k:
+                min_m = m + 1
+            else:
+                max_m = m
+        return min_m
+    
+    def test(self):
+        s = 'babad'
+        s = 'cbbd'
+        s = 'ccc'
+        
+        
+        n = len(s)
+        dp = [1] * n
+        res = 0
+        res_i = 0
+        for i in range(n):
+            if i >= 1 and s[i] == s[i-1]:
+                dp[i] = max(dp[i], 2)
+            left_idx = i - dp[i-1] - 1
+            if left_idx >= 0 and s[left_idx] == s[i]:
+                dp[i] = max(dp[i], dp[i-1]+2)
+            if dp[i] > res:
+                res = dp[i]
+                res_i = i
+        return s[res_i+1-res:res_i+1]
         
         
 if __name__ == '__main__':
-    Solution().test()
+    print(Solution().test())

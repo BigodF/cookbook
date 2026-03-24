@@ -40,6 +40,21 @@ class Solution:
                     res = j - i + 1
                     res_start = i
         return s[res_start: res_start+res]
+    
+    # ❎错误做法
+    def longestPalindrome_dp1(self, s: str) -> str:
+        n = len(s)
+        dp = [1] * n
+        for i in range(n):
+            if i > 1 and s[i] == s[i-1]:
+                dp[i] = max(dp[i], 2)
+            left_idx = i - dp[i-1] - 1
+            if left_idx >= 0 and dp[left_idx] == s[i]:
+                dp[i] = max(dp[i], dp[i-1]+2)
+        return max(dp)
+        
+        
+        
     def longestPalindrome_center_expand(self, s: str) -> str:
         n = len(s)
         def expand(l, r):
